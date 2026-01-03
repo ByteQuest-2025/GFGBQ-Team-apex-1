@@ -9,7 +9,7 @@ from typing import Any, Dict, List
 
 from app import scoring
 from app.schemas import ClaimResult, ClaimStatus, ReliabilityLabel, VerifyResponse
-from app.services import citation_service, claim_service, verification_service
+from app.services import citation_service, claim_service, wikipedia_service
 
 
 class TrustOrchestrator:
@@ -19,7 +19,7 @@ class TrustOrchestrator:
     This class manages the entire process of:
     1. Extracting claims from text
     2. Checking citations
-    3. Verifying each claim
+    3. Verifying each claim using Wikipedia
     4. Calculating the trust score
     """
 
@@ -56,8 +56,10 @@ class TrustOrchestrator:
                 }
             )
 
-        # Step 4: Verify each claim
-        verified_claims = verification_service.verify_claims(claims_with_citations)
+        # Step 4: Verify each claim using Wikipedia
+        verified_claims = wikipedia_service.verify_claims_with_wikipedia(
+            claims_with_citations
+        )
 
         # Step 5: Calculate trust score
         trust_score = scoring.calculate_trust_score(verified_claims)
@@ -135,12 +137,18 @@ class TrustOrchestrator:
             status_str = claim.get("status", "UNKNOWN")
             status = ClaimStatus(status_str)
 
+            # Get Wikipedia source info
+            wiki_source = claim.get("wikipedia_source")
+            wiki_snippet = claim.get("wikipedia_snippet")
+
             result = ClaimResult(
                 claim_text=claim.get("text", ""),
                 status=status,
                 reason=claim.get("reason", "No reason provided"),
                 confidence=claim.get("confidence", 0.5),
                 has_citation=claim.get("has_citation", False),
+                wikipedia_source=wiki_source,
+                wikipedia_snippet=wiki_snippet,
             )
             results.append(result)
 

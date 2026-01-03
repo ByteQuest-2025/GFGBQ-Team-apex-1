@@ -84,6 +84,12 @@ class VerifiedClaim(BaseModel):
     citation_valid: Optional[bool] = Field(
         default=None, description="Citation validity"
     )
+    wikipedia_source: Optional[str] = Field(
+        default=None, description="Wikipedia article used for verification"
+    )
+    wikipedia_snippet: Optional[str] = Field(
+        default=None, description="Relevant snippet from Wikipedia"
+    )
 
 
 # ============================================
@@ -109,6 +115,12 @@ class ClaimResult(BaseModel):
     )
     has_citation: bool = Field(
         default=False, description="Whether a citation was found for this claim"
+    )
+    wikipedia_source: Optional[str] = Field(
+        default=None, description="Wikipedia article title used for verification"
+    )
+    wikipedia_snippet: Optional[str] = Field(
+        default=None, description="Relevant excerpt from Wikipedia article"
     )
 
 
